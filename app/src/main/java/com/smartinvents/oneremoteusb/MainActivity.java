@@ -10,10 +10,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Vibrator;
-import android.text.Selection;
-import android.text.Spannable;
 import android.text.method.LinkMovementMethod;
-import android.text.method.ScrollingMovementMethod;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -34,23 +31,21 @@ import android.widget.Toast;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
-import java.text.SimpleDateFormat;
+
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 
 public class MainActivity extends Activity {
-    public static final int ID_TEXT_VIEW_LOG = 0;
+
     public static final int ID_TEXT_VIEW_BUTTON_ARRAY = 1;
 
     // System Related Variables
-    private static MainActivity mainActivity;
+
     private static OutputStream logfile = null;
     private OneRemote oneRemote;
     boolean bOneRemoteInit = false;
@@ -61,10 +56,6 @@ public class MainActivity extends Activity {
     ScrollView scrollViewButtonArray;
     LinearLayout llVerticalMain;
     LinearLayout.LayoutParams lllpMain;
-
-    TextView textViewLog;
-    Button buttonInit;
-    Button buttonClear;
 
     TextView textviewBrowse;
     Button buttonBrowse;
@@ -96,16 +87,14 @@ public class MainActivity extends Activity {
         }
 
         // Save Application Folder
-        try {
+      /*  try {
             m_strAppDirectory = appFolder.getCanonicalPath();
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+*/
         // Create Application Folder
         appFolder.mkdirs();
-
-        // Create Preference If Virgin
         firstRunPreferences();
 
         llVerticalMain = new LinearLayout(this);
@@ -119,32 +108,10 @@ public class MainActivity extends Activity {
 
         lllpMain.weight = 1f;
 
-
-        textViewLog = new TextView(this);
-        textViewLog.setId(ID_TEXT_VIEW_LOG);
-        textViewLog.setHeight(200);
-        textViewLog.setBackgroundColor(0xFFEFE4B0);
-        textViewLog.setTextColor(0xFF000000);
-        textViewLog.setTextSize(10);
-
-        textViewLog.setMovementMethod(ScrollingMovementMethod.getInstance());
-
-        LinearLayout.LayoutParams lllpTextViewLog = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-
-        llVerticalMain.addView(textViewLog, lllpTextViewLog);
-
         LinearLayout llHorizontalInitClear = new LinearLayout(this);
         llHorizontalInitClear.setOrientation(LinearLayout.HORIZONTAL);
 
-        buttonInit = new Button(this);
-        buttonInit.setText(R.string.str_btn_init_ir);
-        buttonInit.setOnClickListener(clickButtonInit);
-        llHorizontalInitClear.addView(buttonInit, lllpMain);
 
-        buttonClear = new Button(this);
-        buttonClear.setText(R.string.str_btn_clear);
-        buttonClear.setOnClickListener(clickButtonClear);
-        llHorizontalInitClear.addView(buttonClear, lllpMain);
 
         llVerticalMain.addView(llHorizontalInitClear);
 
@@ -197,7 +164,7 @@ public class MainActivity extends Activity {
             public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
                 // Re-draw Direct Button Name
                 String strRemoteName = spinnerRemoteName.getSelectedItem().toString();
-                log("spinnerRemoteName.setOnItemSelectedListener(), onItemSelected(), strRemoteName=" + strRemoteName);
+
                 drawUiButtonArray(strRemoteName);
             }
 
@@ -222,7 +189,7 @@ public class MainActivity extends Activity {
         m_vibBtnPressed = (Vibrator) this.getSystemService(VIBRATOR_SERVICE);
         this.remotes = new HashMap<String, Remote>();
 
-        mainActivity = this;
+
 
         // Retrieve Previous Button Column Count Setting
         intBtnArrayColCnt = getButtonColCnt();
@@ -238,7 +205,7 @@ public class MainActivity extends Activity {
 
         oneRemote = new OneRemote(this);
 
-        log("class MainActivity(), onCreate() done");
+
     }
 
     @Override
@@ -265,39 +232,22 @@ public class MainActivity extends Activity {
         }
     };
 
-    OnClickListener clickButtonInit = new OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            m_vibBtnPressed.vibrate(50);
-            // Init
-            initOneRemote();
-        }
-    };
 
-    OnClickListener clickButtonClear = new OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            m_vibBtnPressed.vibrate(50);
-            // Clear
-            TextView textView = ((TextView)findViewById(ID_TEXT_VIEW_LOG));
-            textView.setText("");
-        }
-    };
 
     OnClickListener clickButtonRemoteKey = new OnClickListener() {
         @Override
         public void onClick(View view) {
             m_vibBtnPressed.vibrate(50);
-            if (bOneRemoteInit == false) {
+            if (!bOneRemoteInit) {
                 Toast.makeText(getApplicationContext(), R.string.str_fail_reinit, Toast.LENGTH_SHORT).show();
-                log("clickButtonRemoteKey(), onClick(), " + getString(R.string.str_fail_reinit));
+
                 return;
             }
 
             Button btnPressed = (Button)view;
             String strRemoteName = spinnerRemoteName.getSelectedItem().toString();
             String strButttonName = btnPressed.getText().toString();
-            log("clickButtonRemoteKey(), onClick(), strRemoteName=" + strRemoteName + " strButttonName=" + strButttonName);
+
             sendButton(strRemoteName, strButttonName);
         }
     };
@@ -316,7 +266,7 @@ public class MainActivity extends Activity {
     public void setRunned() {
         SharedPreferences.Editor edit = mPrefs.edit();
         edit.putBoolean("firstRun", false);
-        edit.commit();
+        edit.apply();
     }
 
     /**
@@ -334,8 +284,8 @@ public class MainActivity extends Activity {
     public void setLastLircConfFile(String strFilename) {
         SharedPreferences.Editor edit = mPrefs.edit();
         edit.putString("LastLircConfFile", strFilename);
-        edit.commit();
-        log("setLastLircConfFile(), strFilename=" + strFilename);
+        edit.apply();
+
     }
 
     /**
@@ -352,52 +302,25 @@ public class MainActivity extends Activity {
     public void setButtonColCnt(int iBtnColCnt) {
         SharedPreferences.Editor edit = mPrefs.edit();
         edit.putInt("buttonColCnt", iBtnColCnt);
-        edit.commit();
-        log("setButtonColCnt(), iBtnColCnt=" + iBtnColCnt);
+        edit.apply();
+
     }
 
-    public static void log(final String text) {
-        mainActivity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                String logtext = "";
-                SimpleDateFormat dateFormat = new SimpleDateFormat("kk:mm:ss");
-                String datum = dateFormat.format(new Date());
-                logtext = " [" + datum + "] " + text;
-                logtext = logtext + "\r\n";
-                try {
-                    if (logfile == null) {
-                        logfile = new FileOutputStream(m_strAppDirectory + "/usboneremote.txt");
-                    }
-                    logfile.write(logtext.getBytes());
-                    logfile.flush();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-                TextView textView = ((TextView) mainActivity.findViewById(ID_TEXT_VIEW_LOG));
-                textView.setText(textView.getText() + logtext);
-
-                Spannable sText = (Spannable) textView.getText();
-                Selection.setSelection(sText, sText.length());
-            }
-        });
-    }
 
     public void initOneRemote() {
         try {
-            if (oneRemote.init() == true){
+            if (oneRemote.init()){
                 bOneRemoteInit = true;
                 Toast.makeText(getApplicationContext(), R.string.str_init_ok, Toast.LENGTH_SHORT).show();
-                log(getString(R.string.str_init_ok));
+
             }
             else{
                 Toast.makeText(getApplicationContext(), R.string.str_init_fail, Toast.LENGTH_SHORT).show();
-                log(getString(R.string.str_init_fail));
+
             }
         } catch (Exception e) {
             Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-            log(e.getMessage());
+
         }
     }
 
@@ -419,12 +342,12 @@ public class MainActivity extends Activity {
         try {
             InputStreamReader isr = new InputStreamReader(new FileInputStream(file));
             ConfParser parser = new ConfParser(isr);
-            log("discoverRemotes(), new ConfParser(isr)");
+
             this.remotes.clear();
             for (Remote remote : parser.Parse()) {
                 String strRemoteName = remote.getName();
                 this.remotes.put(strRemoteName, remote);
-                log("discoverRemotes(), Added to remotes, strRemoteName=" + strRemoteName);
+
             }
 
             // Re-Populate Spinner Remote Name
@@ -437,27 +360,26 @@ public class MainActivity extends Activity {
         } catch (UnsupportedEncodingException e) {
             Toast.makeText(getApplicationContext(), "UnsupportedEncodingException while parsing lirc file", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
-            log("discoverRemotes(), UnsupportedEncodingException, " + e.getMessage());
+
         } catch (FileNotFoundException e) {
             Toast.makeText(getApplicationContext(), "FileNotFoundException while parsing lirc file", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
-            log("discoverRemotes(), FileNotFoundException, " + e.getMessage());
+
         } catch (Exception e) {
             Toast.makeText(getApplicationContext(), "Exception while parsing lirc file", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
-            log("discoverRemotes(), Exception, " + e.getMessage());
+
         }
     }
 
     public void sendButton(String strRemoteName, String strButtonName) {
         String strSendCmd = "";
-        String strButtonCode = "";
+        String strButtonCode;
         Remote remote;
 
         remote = this.remotes.get(strRemoteName);
         strButtonCode = remote.getButtonsCode(strButtonName);
-        log("sendButton(), strButtonName=" + strButtonName);
-        log("sendButton(), strButtonCode=" + strButtonCode);
+
         Toast.makeText(getApplicationContext(), "Send [" + strButtonName + ", " + strButtonCode + "]", Toast.LENGTH_SHORT).show();
 
         ArrayList<Long> arraylistRawCode = remote.playButton(strButtonName);
@@ -478,7 +400,7 @@ public class MainActivity extends Activity {
         for (String strRemoteName : this.remotes.keySet()) {
             arrayadapterRemoteName.add(strRemoteName);
         }
-        log("updateRemoteNameSpinner() done.");
+
     }
 
     public void drawUiBrowseFileDialog() {
@@ -495,25 +417,15 @@ public class MainActivity extends Activity {
         // Default Filename Using The Public Variable "Default_File_Name"
         FileOpenDialog.Default_File_Name = "";
         if (m_strConfFileDirectory == null){
-            log("discoverRemotes(), m_strConfFileDirectory=" + m_strConfFileDirectory);
+
             FileOpenDialog.chooseFile_or_Dir();
         }
         else{
-            log("LAST discoverRemotes(), m_strConfFileDirectory=" + m_strConfFileDirectory);
+
             FileOpenDialog.chooseFile_or_Dir(m_strConfFileDirectory);
         }
     }
 
-    public void drawUndrawUiTextViewLog() {
-        if(textViewLog.getVisibility() == View.GONE) {
-            textViewLog.setVisibility(View.VISIBLE);
-            buttonClear.setVisibility(View.VISIBLE);
-        }
-        else{
-            textViewLog.setVisibility(View.GONE);
-            buttonClear.setVisibility(View.GONE);
-        }
-    }
 
     public void drawUiDialogChooseBtnColCnt() {
         AlertDialog.Builder alertdialogbuilderChooseBtnColCnt = new AlertDialog.Builder(this);
@@ -540,16 +452,14 @@ public class MainActivity extends Activity {
         Remote remote = this.remotes.get(strRemoteName);
         ArrayList<String> arraylistButtonName = remote.getButtonsNames();
         Iterator<String> iteratorButtonName = arraylistButtonName.iterator();
-        log("drawUiButtonArray(), strRemoteName=" + strRemoteName);
+
 
         llVerticalMain.removeView(scrollViewButtonArray);
 
-//		tablelayoutButtonArray.removeAllViewsInLayout();
+
         tablelayoutButtonArray.removeAllViews();
         scrollViewButtonArray.removeAllViews();
-//		llVerticalMain.removeView(tablelayoutButtonArray);
 
-//		llVerticalMain.removeViewInLayout(tablelayoutButtonArray);
 
         llVerticalMain.removeView(textviewButtonArray);
         llVerticalMain.addView(textviewButtonArray);
@@ -615,8 +525,7 @@ public class MainActivity extends Activity {
         menu.add(0, 0, 0, R.string.str_menu_reset).setIcon(android.R.drawable.ic_lock_power_off);
         menu.add(0, 1, 0, R.string.str_menu_browse_lirc).setIcon(android.R.drawable.ic_menu_add);
         menu.add(0, 2, 0, R.string.str_menu_button_col_cnt).setIcon(android.R.drawable.ic_menu_add);
-        menu.add(0, 3, 0, R.string.str_menu_viewhide_log).setIcon(android.R.drawable.ic_menu_search);
-        menu.add(0, 4, 0, R.string.str_menu_about).setIcon(android.R.drawable.ic_menu_help);
+        menu.add(0, 3, 0, R.string.str_menu_about).setIcon(android.R.drawable.ic_menu_help);
 
         return true;
     }
@@ -634,9 +543,6 @@ public class MainActivity extends Activity {
                 drawUiDialogChooseBtnColCnt();
                 break;
             case 3:
-                drawUndrawUiTextViewLog();
-                break;
-            case 4:
                 drawUiAbout();
                 break;
         }

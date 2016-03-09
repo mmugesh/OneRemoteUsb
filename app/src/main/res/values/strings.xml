@@ -17,11 +17,10 @@
     <string name="str_menu_reset">Init OneRemoteUSB </string>
     <string name="str_menu_browse_lirc">Browse lirc file</string>
     <string name="str_menu_button_col_cnt">Button column count</string>
-    <string name="str_menu_viewhide_log">View/Hide log</string>
     <string name="str_menu_about">About</string>
 
     <string name="str_menu_button_col_cnt_title">Choose Button Column Count</string>
 
-    <string name="str_about_info"><body style="text-align:justify;">\nPlease select lirc conf file by tapping \"Menu\"->\"Browse lirc file\", or get some sample lirc conf files from\n<a href="http://lirc.sourceforge.net/remotes">http://lirc.sourceforge.net/remotes</a>.\n</body></string>
+    <string name="str_about_info"><body style="text-align:justify;">\nPlease select lirc conf file by tapping \"Menu\"->\"Browse lirc file\".\n</body></string>
     <string name="str_about_dismiss">Dismiss</string>
 </resources>

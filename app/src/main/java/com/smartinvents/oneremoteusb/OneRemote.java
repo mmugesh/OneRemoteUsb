@@ -69,7 +69,7 @@ public class OneRemote {
             throw new RuntimeException("OneRemote is ready and initialized.");
 
         if (mSerial == null) {
-            MainActivity.log("OneRemote, init(), SERIAL_BAUDRATE = " + baudrate);
+
             SERIAL_BAUDRATE = baudrate;
             mSerial = new FTDriver((UsbManager)activity.getSystemService(Context.USB_SERVICE));
 
@@ -91,10 +91,10 @@ public class OneRemote {
 
         if(mSerial.begin(SERIAL_BAUDRATE)) {
             initConnection();
-            MainActivity.log("OneRemote, init(), Success!");
+
             return true;
         } else {
-            MainActivity.log("OneRemote, init(), Fail!");
+
             return false;
         }
     }
@@ -111,7 +111,7 @@ public class OneRemote {
      * Sends a command in the format '00 01 a3 ff ff 89 e8 bf ac '. He must necessarily conclude with 'ff ff'!
      */
     public void sendCommandAsync(String command) {
-        MainActivity.log("Command: " + command);
+
         sendInternal( getCommandBytes(command) );
     }
 
@@ -125,20 +125,20 @@ public class OneRemote {
         }
 
         mSerial.write(CMD_RESET);
-        MainActivity.log("sent reset");
+
 
         mSerial.write(CMD_SAMPLEMODE);
-        MainActivity.log("Sent Sample Mode");
+
         readSampleMode();
 
         mSerial.write(CMD_BYTE_COUNT_REPORT);
-        MainActivity.log("byte count report sent");
+
 
         mSerial.write(CMD_NOTIFY_ON_COMPLETE);
-        MainActivity.log("notify on complete sent");
+
 
         mSerial.write(CMD_HANDSHAKE);
-        MainActivity.log("handshake sent");
+
 
         ready = true;
     }
@@ -148,7 +148,7 @@ public class OneRemote {
         byte[] buffer = new byte[4096];
         int len = mSerial.read(buffer);
         if (len == 0) {
-            MainActivity.log("no reply");
+
             return new byte[0];
         }
         // Start debug
@@ -160,12 +160,12 @@ public class OneRemote {
             bytes = bytes + buffer[i] + " ";
             hex = hex + String.format("0x%02X", (buffer[i])) + " ";
         }
-        MainActivity.log("Receive : " + hex + ", \"" + text + "\"");
+
 //		MainActivity.log("Receive (byte): " + bytes);
 //		MainActivity.log("Receive (hex) : " + hex);
         if (len ==6) {
             // 6x 0xFF --> error
-            MainActivity.log("received ERROR");
+
         }
         // End debug
 
@@ -246,20 +246,19 @@ public class OneRemote {
         try {
             internalSendCommand(command);
         } catch (Exception e) {
-            MainActivity.log("Exception: " + e.getMessage());
-            MainActivity.log("Hole remaining buffer from!");
+
             byte[] buffer;
             do {
                 buffer = readAnswer();
             } while(buffer.length != 0);
-            MainActivity.log("Send Fail.");
+
         }
     }
 
     private void internalSendCommand(byte[] command) {
         if (command != null) {
             mSerial.write(CMD_TRANSMIT);
-            MainActivity.log("transmit sent");
+
             readHandshake();
 
             int iFull = command.length / ONEREMOTE_BUFFER_SIZE;
@@ -271,7 +270,7 @@ public class OneRemote {
                 System.arraycopy(command, i * ONEREMOTE_BUFFER_SIZE, buffer, 0, ONEREMOTE_BUFFER_SIZE);
                 mSerial.write(buffer);
 //				MainActivity.log("fullbuffer sent: " + ONEREMOTE_BUFFER_SIZE);
-                MainActivity.log("fullbuffer sent: 0x3E");
+
                 readHandshake();
             }
 
@@ -281,7 +280,7 @@ public class OneRemote {
                 System.arraycopy(command, iFull * ONEREMOTE_BUFFER_SIZE, buffer, 0, iRest);
 
                 mSerial.write(buffer);
-                MainActivity.log("remaining buffer sent: " + iRest);
+
                 readHandshake();
             }
 
@@ -289,22 +288,22 @@ public class OneRemote {
 
             readNotifyOnComplete();
 
-            MainActivity.log("Commands sent successfully");
+
         }
     }
 
     // BroadcastReceiver when insert/remove the device USB plug into/from a USB port
     private BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
-            MainActivity.log("mUsbReceiver onReceive");
+
             String action = intent.getAction();
             if (UsbManager.ACTION_USB_DEVICE_ATTACHED.equals(action)) {
-                MainActivity.log("mUsbReceiver usbAttached");
+
                 mSerial.usbAttached(intent);
                 mSerial.begin(SERIAL_BAUDRATE);
                 initConnection();
             } else if (UsbManager.ACTION_USB_DEVICE_DETACHED.equals(action)) {
-                MainActivity.log("mUsbReceiver usbDetached");
+
                 ready = false;
                 mSerial.usbDetached(intent);
                 mSerial.end();

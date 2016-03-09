@@ -29,7 +29,7 @@ public class Remote {
     protected HashMap<String, ArrayList<Long>> raw_codes = new HashMap<String, ArrayList<Long>>();
     protected LinkedHashMap<String, Long> codes = new LinkedHashMap<String, Long>();
 
-    boolean toggle_bit_state = false; // initial state shouldn't matter anyway
+ //   boolean toggle_bit_state = false; // initial state shouldn't matter anyway
 
     Remote() {
         this.name = "Unknown_" + UUID.randomUUID().toString();
