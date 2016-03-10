@@ -161,13 +161,7 @@ public class OneRemote {
             hex = hex + String.format("0x%02X", (buffer[i])) + " ";
         }
 
-//		MainActivity.log("Receive (byte): " + bytes);
-//		MainActivity.log("Receive (hex) : " + hex);
-        if (len ==6) {
-            // 6x 0xFF --> error
 
-        }
-        // End debug
 
         byte[] reply = new byte[len];
         System.arraycopy(buffer, 0, reply, 0, len);

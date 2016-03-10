@@ -10,9 +10,9 @@
     <string name="str_btn_clear">Clear</string>
     <string name="str_btn_browse">Browse</string>
 
-    <string name="str_tvw_browse_inst">1. Select a lirc file :</string>
-    <string name="str_tvw_sel_rmt">2. Select a remote :</string>
-    <string name="str_tvw_press_btn">3. Press a direct button :</string>
+
+    <string name="str_tvw_sel_rmt">1. Select a remote :</string>
+    <string name="str_tvw_press_btn">2. Press a direct button :</string>
 
     <string name="str_menu_reset">Init OneRemoteUSB </string>
     <string name="str_menu_browse_lirc">Browse lirc file</string>

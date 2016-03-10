@@ -70,7 +70,7 @@ public class MainActivity extends Activity {
     private Vibrator m_vibBtnPressed;
     private String m_strConfFilename = null;
     private String m_strConfFileDirectory= null;
-    private static String m_strAppDirectory= null;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,13 +86,7 @@ public class MainActivity extends Activity {
             appFolder = new File("/data/data/" + getPackageName() + File.separator + getString(R.string.app_name));
         }
 
-        // Save Application Folder
-      /*  try {
-            m_strAppDirectory = appFolder.getCanonicalPath();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-*/
+
         // Create Application Folder
         appFolder.mkdirs();
         firstRunPreferences();
@@ -120,28 +114,6 @@ public class MainActivity extends Activity {
         viewLine.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, 3));
         viewLine.setBackgroundColor(Color.rgb(51, 181, 229));
         llVerticalMain.addView(viewLine);
-
-        TextView textviewBrowseInst = new TextView(this);
-        textviewBrowseInst.setText(R.string.str_tvw_browse_inst);
-        llVerticalMain.addView(textviewBrowseInst);
-
-        LinearLayout llHorizontalBrowse = new LinearLayout(this);
-        llHorizontalBrowse.setOrientation(LinearLayout.HORIZONTAL);
-
-        textviewBrowse = new TextView(this);
-        textviewBrowse.setGravity(Gravity.CENTER_VERTICAL);
-        textviewBrowse.setTextColor(0xFFFFFFFF);
-        textviewBrowse.setLayoutParams(lllpMain);
-        llHorizontalBrowse.addView(textviewBrowse);
-
-        buttonBrowse = new Button(this);
-        buttonBrowse.setText(R.string.str_btn_browse);
-        buttonBrowse.setOnClickListener(clickButtonBrowse);
-        LinearLayout.LayoutParams lllpBrowse = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-
-        llHorizontalBrowse.addView(buttonBrowse, lllpBrowse);
-
-        llVerticalMain.addView(llHorizontalBrowse);
 
         LinearLayout llHorizontalSelRemote = new LinearLayout(this);
         llHorizontalSelRemote.setOrientation(LinearLayout.HORIZONTAL);
@@ -326,7 +298,7 @@ public class MainActivity extends Activity {
 
     public void parseLircFile(String strFilename) {
         // Update UI
-        textviewBrowse.setText(strFilename);
+//        textviewBrowse.setText(strFilename);
 
         // Parse Lirc Conf File
         discoverRemotes(strFilename);
